@@ -81,6 +81,12 @@ import OuterFrame from 'simple-mind-map/src/plugins/OuterFrame.js'
 // import Numbers from 'simple-mind-map-plugin-numbers'
 // Freemind软件格式导入导出插件，该插件为付费插件，详情请查看开发文档
 // import Freemind from 'simple-mind-map-plugin-freemind'
+<<<<<<< HEAD
+=======
+// Excel软件格式导入导出插件，该插件为付费插件，详情请查看开发文档
+// import Excel from 'simple-mind-map-plugin-excel'
+// npm link simple-mind-map-plugin-excel simple-mind-map-plugin-freemind simple-mind-map-plugin-numbers simple-mind-map-plugin-notation simple-mind-map-plugin-handdrawnlikestyle simple-mind-map
+>>>>>>> f4d84aeb (Demo：支持导入导出Excel)
 import OutlineSidebar from './OutlineSidebar'
 import Style from './Style'
 import BaseStyle from './BaseStyle'
@@ -137,7 +143,10 @@ MindMap.usePlugin(MiniMap)
   .usePlugin(RainbowLines)
   .usePlugin(Demonstrate)
   .usePlugin(OuterFrame)
+<<<<<<< HEAD
   // .usePlugin(Freemind)
+=======
+>>>>>>> f4d84aeb (Demo：支持导入导出Excel)
 // .usePlugin(Cooperate) // 协同插件
 
 // 注册自定义主题
@@ -565,6 +574,16 @@ export default {
       if (typeof Numbers !== 'undefined') {
         this.mindMap.addPlugin(Numbers)
         this.$store.commit('setSupportNumbers', true)
+      }
+      if (typeof Freemind !== 'undefined') {
+        this.mindMap.addPlugin(Freemind)
+        this.$store.commit('setSupportFreemind', true)
+        Vue.prototype.Freemind = Freemind
+      }
+      if (typeof Excel !== 'undefined') {
+        this.mindMap.addPlugin(Excel)
+        this.$store.commit('setSupportExcel', true)
+        Vue.prototype.Excel = Excel
       }
       this.mindMap.keyCommand.addShortcut('Control+s', () => {
         this.manualSave()
