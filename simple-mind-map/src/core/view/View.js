@@ -138,7 +138,7 @@ class View {
         if (dirs.includes(CONSTANTS.DIR.RIGHT)) {
           mx = -stepX
         }
-        this.translateXY(mx, my)
+        this.translateXYwithRatio(mx, my)
       }
     })
     this.mindMap.on('resize', () => {
@@ -179,16 +179,23 @@ class View {
   //  平移x,y方向
   translateXY(x, y) {
     if (x === 0 && y === 0) return
-    this.x += x * this.mindMap.opt.translateRatio
-    this.y += y * this.mindMap.opt.translateRatio
+    this.x += x 
+    this.y += y
     this.transform()
     this.emitEvent('translate')
   }
-
+    //  鼠标/触控板滑动时，根据配置的平移步长比例，平移x,y方向
+    translateXYwithRatio(x, y) {
+      if (x === 0 && y === 0) return
+      this.x += x * this.mindMap.opt.translateRatio
+      this.y += y * this.mindMap.opt.translateRatio
+      this.transform()
+      this.emitEvent('translate')
+    }
   //  平移x方向
   translateX(step) {
     if (step === 0) return
-    this.x += step * this.mindMap.opt.translateRatio
+    this.x += step
     this.transform()
     this.emitEvent('translate')
   }
@@ -203,7 +210,7 @@ class View {
   //  平移y方向
   translateY(step) {
     if (step === 0) return
-    this.y += step * this.mindMap.opt.translateRatio
+    this.y += step
     this.transform()
     this.emitEvent('translate')
   }
@@ -246,7 +253,7 @@ class View {
 
   //  缩小
   narrow(cx, cy, isTouchPad) {
-    const scaleRatio = this.mindMap.opt.scaleRatio / (isTouchPad ? 5 : 1)
+    const scaleRatio = this.mindMap.opt.scaleRatio / (isTouchPad ? 3 : 1)
     // const scale = Math.max(this.scale - scaleRatio, 0.1)
     const scale = Math.max(this.scale - scaleRatio, this.mindMap.opt.minZoomRatio / 100)
     this.scaleInCenter(scale, cx, cy)
@@ -256,7 +263,7 @@ class View {
 
   //  放大
   enlarge(cx, cy, isTouchPad) {
-    const scaleRatio = this.mindMap.opt.scaleRatio / (isTouchPad ? 5 : 1)
+    const scaleRatio = this.mindMap.opt.scaleRatio / (isTouchPad ? 3 : 1)
     // const scale = this.scale + scaleRatio
     const scale = Math.min(this.scale + scaleRatio, this.mindMap.opt.maxZoomRatio / 100)
     this.scaleInCenter(scale, cx, cy)
