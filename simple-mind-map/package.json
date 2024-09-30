@@ -1,6 +1,6 @@
 {
   "name": "zyb-mindmap",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "思维导图框架包",
   "authors": [
     {
@@ -13,7 +13,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/wanglin2/mind-map"
+    "url": "https://github.com/ZhangMingZhao1/mind-map"
   },
   "scripts": {
     "lint": "eslint src/",
