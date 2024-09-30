@@ -30,8 +30,11 @@ class View {
     })
     // 拖动视图
     this.mindMap.event.on('mousedown', e => {
-      if (this.mindMap.opt.isDisableDrag) return
-      e.preventDefault()
+      const { isDisableDrag, mousedownEventPreventDefault } = this.mindMap.opt
+      if (isDisableDrag) return
+      if (mousedownEventPreventDefault) {
+        e.preventDefault()
+      }
       this.sx = this.x
       this.sy = this.y
     })
@@ -63,7 +66,8 @@ class View {
         mouseScaleCenterUseMousePosition,
         mousewheelMoveStep,
         mousewheelZoomActionReverse,
-        disableMouseWheelZoom
+        disableMouseWheelZoom,
+        translateRatio
       } = this.mindMap.opt
       // 是否自定义鼠标滚轮事件
       if (
@@ -138,7 +142,7 @@ class View {
         if (dirs.includes(CONSTANTS.DIR.RIGHT)) {
           mx = -stepX
         }
-        this.translateXYwithRatio(mx, my)
+        this.translateXY(mx * translateRatio, my * translateRatio)
       }
     })
     this.mindMap.on('resize', () => {
@@ -179,19 +183,12 @@ class View {
   //  平移x,y方向
   translateXY(x, y) {
     if (x === 0 && y === 0) return
-    this.x += x 
+    this.x += x
     this.y += y
     this.transform()
     this.emitEvent('translate')
   }
-    //  鼠标/触控板滑动时，根据配置的平移步长比例，平移x,y方向
-    translateXYwithRatio(x, y) {
-      if (x === 0 && y === 0) return
-      this.x += x * this.mindMap.opt.translateRatio
-      this.y += y * this.mindMap.opt.translateRatio
-      this.transform()
-      this.emitEvent('translate')
-    }
+  
   //  平移x方向
   translateX(step) {
     if (step === 0) return
@@ -253,9 +250,9 @@ class View {
 
   //  缩小
   narrow(cx, cy, isTouchPad) {
-    const scaleRatio = this.mindMap.opt.scaleRatio / (isTouchPad ? 3 : 1)
-    // const scale = Math.max(this.scale - scaleRatio, 0.1)
-    const scale = Math.max(this.scale - scaleRatio, this.mindMap.opt.minZoomRatio / 100)
+    let { scaleRatio, minZoomRatio } = this.mindMap.opt
+    scaleRatio = scaleRatio / (isTouchPad ? 3 : 1)
+    const scale = Math.max(this.scale - scaleRatio, minZoomRatio / 100)
     this.scaleInCenter(scale, cx, cy)
     this.transform()
     this.emitEvent('scale')
@@ -263,9 +260,14 @@ class View {
 
   //  放大
   enlarge(cx, cy, isTouchPad) {
-    const scaleRatio = this.mindMap.opt.scaleRatio / (isTouchPad ? 3 : 1)
-    // const scale = this.scale + scaleRatio
-    const scale = Math.min(this.scale + scaleRatio, this.mindMap.opt.maxZoomRatio / 100)
+    let { scaleRatio, maxZoomRatio } = this.mindMap.opt
+    scaleRatio = scaleRatio / (isTouchPad ? 3 : 1)
+    let scale = 0
+    if (maxZoomRatio === -1) {
+      scale = this.scale + scaleRatio
+    } else {
+      scale = Math.min(this.scale + scaleRatio, maxZoomRatio / 100)
+    }
     this.scaleInCenter(scale, cx, cy)
     this.transform()
     this.emitEvent('scale')
