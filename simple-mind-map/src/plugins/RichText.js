@@ -189,7 +189,8 @@ class RichText {
       textAutoWrapWidth,
       selectTextOnEnterEditText,
       transformRichTextOnEnterEdit,
-      openRealtimeRenderOnNodeTextEdit
+      openRealtimeRenderOnNodeTextEdit,
+      enableAutoEmptyTextWhenKeydown
     } = this.mindMap.opt
     textAutoWrapWidth = node.hasCustomWidth()
       ? node.customTextWidth
@@ -288,6 +289,10 @@ class RichText {
     } else {
       // 已经是富文本
       this.textEditNode.innerHTML = this.cacheEditingText || nodeText
+    }
+    if (enableAutoEmptyTextWhenKeydown && isFromKeyDown) {
+      this.textEditNode.innerHTML = ''
+      this.lostStyle = true
     }
     this.initQuillEditor()
     document.querySelector('.ql-editor').style.minHeight = originHeight + 'px'
