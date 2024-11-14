@@ -24,18 +24,7 @@ class Export {
   async export(type, isDownload = true, name = '思维导图', ...args) {
     if (this[type]) {
       const result = await this[type](name, ...args)
-      const isSafari = () => {
-        return (
-          navigator.userAgent.includes('Safari') &&
-          !navigator.userAgent.includes('Chrome')
-        )
-      }
       if (isDownload) {
-        if (type === 'png' && isSafari()) {
-          const result = await this[type](name, ...args)
-          downloadFile(result, name + '.' + type)
-          return result
-        }
         downloadFile(result, name + '.' + type)
       }
       return result
@@ -300,7 +289,18 @@ class Export {
     this.handleNodeExport(node)
     const { str, clipData } = await this.getSvgData(node)
     const svgUrl = await this.fixSvgStrAndToBlob(str)
-    const res = await this.svgToPng(svgUrl, transparent, clipData)
+    const isSafari = () => {
+      return (
+        navigator.userAgent.includes('Safari') &&
+        !navigator.userAgent.includes('Chrome')
+      )
+    }
+    let res
+    res = await this.svgToPng(svgUrl, transparent, clipData)
+    if (isSafari()) {
+      console.log('isSafari')
+      res = await this.svgToPng(svgUrl, transparent, clipData)
+    }
     return res
   }
 
