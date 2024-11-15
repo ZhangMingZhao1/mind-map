@@ -298,7 +298,6 @@ class Export {
     let res
     res = await this.svgToPng(svgUrl, transparent, clipData)
     if (isSafari()) {
-      console.log('isSafari')
       res = await this.svgToPng(svgUrl, transparent, clipData)
     }
     return res
