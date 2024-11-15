@@ -309,7 +309,7 @@ class RichText {
       isDefaultText = true
     }
     if (
-      level === 2 &&
+      level >= 2 &&
       text === this.mindMap.opt.defaultInsertBelowSecondLevelNodeText
     ) {
       isDefaultText = true
