@@ -487,6 +487,8 @@ class MindMap {
       }
       // 取消当前激活的元素
       this.execCommand('CLEAR_ACTIVE_NODE')
+    } else {
+      this.command.originAddHistory()
     }
     this.opt.readonly = isReadonly
     this.emit('mode_change', mode)
