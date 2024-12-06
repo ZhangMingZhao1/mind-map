@@ -57,6 +57,7 @@ class Command {
 
   //  执行命令
   exec(name, ...args) {
+    console.log('exec', name, ...args)
     if (this.commands[name]) {
       this.commands[name].forEach(fn => {
         fn(...args)
@@ -101,21 +102,30 @@ class Command {
 
   //  添加回退数据
   addHistory() {
+    console.log('this.mindMap.opt', this.mindMap.opt)
     if (this.mindMap.opt.readonly || this.isPause) {
       return
     }
     const lastData =
       this.history.length > 0 ? this.history[this.activeHistoryIndex] : null
-    const data = this.getCopyData()
+    let data = this.getCopyData()
+    data.layout = this.mindMap.getLayout()
+    data.theme = {
+      template: this.mindMap.getTheme(),
+      config: this.mindMap.getCustomThemeConfig()
+    }
+    data.config = false
     // 此次数据和上次一样则不重复添加
     if (lastData === data) return
     if (lastData && JSON.stringify(lastData) === JSON.stringify(data)) {
+      // console.log('lastData === data')
       return
     }
     this.emitDataUpdatesEvent(lastData, data)
     // 删除当前历史指针后面的数据
     this.history = this.history.slice(0, this.activeHistoryIndex + 1)
     this.history.push(simpleDeepClone(data))
+    console.log('this.history addHistory', this.history)
     // 历史记录数超过最大数量
     if (this.history.length > this.mindMap.opt.maxHistoryCount) {
       this.history.shift()
@@ -129,6 +139,59 @@ class Command {
     )
   }
 
+  //  添加全局回退数据 主题 结构 线结构
+  addConfigHistory() {
+    if (this.mindMap.opt.readonly || this.isPause) {
+      return
+    }
+
+    let data = this.getCopyData()
+    data.layout = this.mindMap.getLayout()
+    data.theme = {
+      template: this.mindMap.getTheme(),
+      config: this.mindMap.getCustomThemeConfig()
+    }
+    data.config = true
+    console.log('addConfigHistory', data)
+    // 删除当前历史指针后面的数据
+    this.history = this.history.slice(0, this.activeHistoryIndex + 1)
+    this.history.push(simpleDeepClone(data))
+    console.log('this.history', this.history)
+    // 历史记录数超过最大数量
+    if (this.history.length > this.mindMap.opt.maxHistoryCount) {
+      this.history.shift()
+    }
+    this.activeHistoryIndex = this.history.length - 1
+    this.mindMap.emit(
+      'back_forward',
+      this.activeHistoryIndex,
+      this.history.length
+    )
+  }
+  handleConfigHistory(data) {
+    console.log('data', data)
+    // if (data.config === true) {
+    const theme = data.theme
+    const layout = data.layout
+    const nowTheme = this.mindMap.getTheme()
+    if (theme.template !== nowTheme) {
+      this.mindMap.setTheme(theme.template)
+    }
+    const nowCustomThemeConfig = this.mindMap.getCustomThemeConfig()
+    console.log(
+      'theme.config, nowCustomThemeConfig',
+      theme.config,
+      nowCustomThemeConfig
+    )
+    if (!isSameObject(theme.config, nowCustomThemeConfig)) {
+      console.log('setCustomThemeConfig')
+      this.mindMap.setThemeConfig(theme.config)
+    }
+    if (layout !== this.mindMap.getLayout()) {
+      this.mindMap.setLayout(layout)
+    }
+    // }
+  }
   //  回退
   back(step = 1) {
     if (this.mindMap.opt.readonly) {
@@ -143,6 +206,7 @@ class Command {
         this.history.length
       )
       const data = simpleDeepClone(this.history[this.activeHistoryIndex])
+      this.handleConfigHistory(data)
       this.emitDataUpdatesEvent(lastData, data)
       return data
     }
@@ -163,6 +227,7 @@ class Command {
         this.history.length
       )
       const data = simpleDeepClone(this.history[this.activeHistoryIndex])
+      this.handleConfigHistory(data)
       this.emitDataUpdatesEvent(lastData, data)
       return data
     }

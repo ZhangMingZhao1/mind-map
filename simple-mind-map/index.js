@@ -124,7 +124,10 @@ class MindMap {
     // 初始渲染
     this.render(this.opt.fit ? () => this.view.fit() : () => {})
     setTimeout(() => {
-      if (this.opt.data) this.command.addHistory()
+      if (this.opt.data) {
+        console.log('init addHistory')
+        this.command.addHistory()
+      }
     }, 0)
   }
 
@@ -489,6 +492,9 @@ class MindMap {
       this.execCommand('CLEAR_ACTIVE_NODE')
     }
     this.opt.readonly = isReadonly
+    if (!isReadonly) {
+      this.command.originAddHistory()
+    }
     this.emit('mode_change', mode)
   }
 
