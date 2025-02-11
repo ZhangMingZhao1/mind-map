@@ -20,7 +20,8 @@ import {
   isUndef,
   handleGetSvgDataExtraContent,
   getNodeTreeBoundingRect,
-  mergeTheme
+  mergeTheme,
+  createUidForAppointNodes
 } from './src/utils'
 import defaultTheme, {
   checkIsNodeSizeIndependenceConfig
@@ -123,9 +124,11 @@ class MindMap {
 
     // 初始渲染
     this.render(this.opt.fit ? () => this.view.fit() : () => {})
-    setTimeout(() => {
-      if (this.opt.data) this.command.addHistory()
-    }, 0)
+
+    // 将初始数据添加到历史记录堆栈中
+    if (this.opt.addHistoryOnInit && this.opt.data) {
+      this.command.addHistory()
+    }
   }
 
   //  配置参数处理
@@ -147,6 +150,8 @@ class MindMap {
     if (data.data && !data.data.expand) {
       data.data.expand = true
     }
+    // 给没有uid的节点添加uid
+    createUidForAppointNodes([data], false, null, true)
     return data
   }
 
@@ -336,7 +341,7 @@ class MindMap {
     this.opt.themeConfig = config
     if (!notRender) {
       // 检查改变的是否是节点大小无关的主题属性
-      let res = checkIsNodeSizeIndependenceConfig(changedConfig)
+      const res = checkIsNodeSizeIndependenceConfig(changedConfig)
       this.render(null, res ? '' : CONSTANTS.CHANGE_THEME)
     }
   }
@@ -393,14 +398,18 @@ class MindMap {
 
   // 更新画布数据，如果新的数据是在当前画布节点数据基础上增删改查后形成的，那么可以使用该方法来更新画布数据
   updateData(data) {
+    data = this.handleData(data)
+    this.emit('before_update_data', data)
     this.renderer.setData(data)
     this.render()
     this.command.addHistory()
+    this.emit('update_data', data)
   }
 
   //  动态设置思维导图数据，纯节点数据
   setData(data) {
     data = this.handleData(data)
+    this.emit('before_set_data', data)
     this.opt.data = data
     this.execCommand('CLEAR_ACTIVE_NODE')
     this.command.clearHistory()
@@ -489,6 +498,10 @@ class MindMap {
       this.execCommand('CLEAR_ACTIVE_NODE')
     }
     this.opt.readonly = isReadonly
+    // 切换为编辑模式时，如果历史记录堆栈是空的，那么进行一次入栈操作
+    if (!isReadonly && this.command.history.length <= 0) {
+      this.command.originAddHistory()
+    }
     this.emit('mode_change', mode)
   }
 
