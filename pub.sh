@@ -24,7 +24,7 @@ npm version patch
 
 # 登录并发布
 npm login --registry=https://ued.zuoyebang.cc/npm/ --username=zhangmingzhao
-npm publish
+npm publish --registry=https://ued.zuoyebang.cc/npm/
 
 # 返回原始目录
 cd "$CURRENT_DIR"
