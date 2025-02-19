@@ -89,11 +89,16 @@ export default class KeyCommand {
   // 根据事件目标判断是否响应快捷键事件
   defaultEnableCheck(e) {
     const target = e.target
+    console.log('target', target)
     return (
       target === document.body ||
       target.classList.contains(CONSTANTS.EDIT_NODE_CLASS.SMM_NODE_EDIT_WRAP) ||
-      target.classList.contains(CONSTANTS.EDIT_NODE_CLASS.RICH_TEXT_EDIT_WRAP) || 
-      target.classList.contains(CONSTANTS.EDIT_NODE_CLASS.ASSOCIATIVE_LINE_TEXT_EDIT_WRAP)
+      target.classList.contains(
+        CONSTANTS.EDIT_NODE_CLASS.RICH_TEXT_EDIT_WRAP
+      ) ||
+      target.classList.contains(
+        CONSTANTS.EDIT_NODE_CLASS.ASSOCIATIVE_LINE_TEXT_EDIT_WRAP
+      )
     )
   }
 
@@ -108,7 +113,7 @@ export default class KeyCommand {
       typeof customCheckEnableShortcut === 'function'
         ? customCheckEnableShortcut
         : this.defaultEnableCheck
-    if (!checkFn(e)) return
+    // if (!checkFn(e)) return // 冲突问题暂时没用，之前
     if (this.isPause || (enableShortcutOnlyWhenMouseInSvg && !this.isInSvg)) {
       return
     }

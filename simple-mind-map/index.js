@@ -36,6 +36,7 @@ class MindMap {
    * @param {defaultOpt} opt
    */
   constructor(opt = {}) {
+    console.log('mind包初始化')
     MindMap.instanceCount++
     // 合并选项
     this.opt = this.handleOpt(merge(defaultOpt, opt))

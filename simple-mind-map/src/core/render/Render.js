@@ -162,7 +162,7 @@ class Render {
       this.mindMap.on('view_data_change', onViewDataChange)
     }
     // 文本编辑时实时更新节点大小
-    this.onNodeTextEditChange = debounce(this.onNodeTextEditChange, 100, this)
+    this.onNodeTextEditChange = debounce(this.onNodeTextEditChange, 10, this)
     if (openRealtimeRenderOnNodeTextEdit) {
       this.mindMap.on('node_text_edit_change', this.onNodeTextEditChange)
     }
@@ -1551,7 +1551,7 @@ class Render {
     this.setNodeDataRender(node, data)
     // 更新了连线的样式
     if (lineStyleProps.includes(prop)) {
-      (node.parent || node).renderLine(true)
+      ;(node.parent || node).renderLine(true)
     }
   }
 
@@ -1568,7 +1568,7 @@ class Render {
       }
     })
     if (hasLineStyleProps) {
-      (node.parent || node).renderLine(true)
+      ;(node.parent || node).renderLine(true)
     }
   }
 

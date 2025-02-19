@@ -153,7 +153,7 @@ export default class TextEdit {
     ) {
       return
     }
-    if (e.target !== document.body) return // 13.0版本作者的解决方法 https://github.com/wanglin2/mind-map/issues/980 但这个问题我是通过!this.checkKey(e, 'Backspace')判断是否阻止冒牌解决的
+    // if (e.target !== document.body) return // 13.0版本作者的解决方法 https://github.com/wanglin2/mind-map/issues/980 但这个问题我是通过!this.checkKey(e, 'Backspace')判断是否阻止冒牌解决的
     const activeNodeList = this.mindMap.renderer.activeNodeList
     if (activeNodeList.length <= 0 || activeNodeList.length > 1) return
     const node = activeNodeList[0]
